@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 from io import BytesIO
+import PIL
 from PIL import Image
 import os
 
@@ -16,5 +17,9 @@ links = soup.find_all("a", {"class": "thumb"})
 for item in links:
     img_object = requests.get(item.attrs["href"])
     title = item.attrs["href"].split("/")[-1].partition("?")[0]
-    img = Image.open(BytesIO(img_object.content))
+    try:
+        img = Image.open(BytesIO(img_object.content))
+    except PIL.UnidentifiedImageError:
+        print("Error in image")
+        continue
     img.save("./scraped_images/" + title)
